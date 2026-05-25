@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Community Schools Needs Assessment | CCSPP 2025</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1B3A6B; --gold: #C9A84C; --white: #ffffff;
+    --text-primary: #111827; --text-secondary: #4B5563; --text-tertiary: #9CA3AF;
+    --bg-primary: #ffffff; --bg-secondary: #F9FAFB; --bg-page: #F3F4F6;
+    --border: #E5E7EB; --border-med: #D1D5DB;
+    --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--navy);
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .header-inner {
+    max-width: 860px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .header-brand { display: flex; align-items: center; gap: 10px; }
+  .header-logo {
+    width: 34px; height: 34px; background: rgba(201,168,76,0.2);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-logo i { font-size: 17px; color: var(--gold); }
+  .header-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+  .header-badge {
+    font-size: 10px; font-weight: 600; color: var(--gold);
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .progress-bar-wrap { width: 100%; height: 3px; background: rgba(255,255,255,0.12); }
+  .progress-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 28px 24px 60px; }
+  @media(max-width:600px){ .page{ padding: 18px 14px 48px; } }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card + .card { margin-top: 12px; }
+  .card-sm { padding: 14px 16px; border-radius: var(--radius-md); }
+
+  /* ── BUTTONS ── */
+  button {
+    font-family: inherit; cursor: pointer; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 500; transition: all 0.15s; border: 1px solid var(--border-med);
+    background: var(--bg-primary); color: var(--text-secondary);
+    padding: 8px 14px; display: inline-flex; align-items: center; gap: 5px;
+  }
+  button:hover { background: var(--bg-secondary); border-color: #9CA3AF; }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+  }
+  .btn-primary:hover { background: #254a8a; border-color: #254a8a; }
+  .btn-success {
+    background: #047857; color: #fff; border-color: #047857;
+  }
+  .btn-success:hover { background: #065f46; }
+  .btn-action {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+    padding: 9px 18px; font-size: 14px;
+  }
+  .btn-action:hover { background: #254a8a; }
+
+  /* ── FORMS ── */
+  select, input[type="text"] {
+    font-family: inherit; font-size: 13px; width: 100%;
+    border: 1px solid var(--border-med); border-radius: var(--radius-md);
+    padding: 9px 11px; background: var(--bg-primary); color: var(--text-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+  select:focus, input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,107,0.12); }
+  label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+
+  /* ── METRIC TILES ── */
+  .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  @media(max-width:500px){ .metric-grid{ grid-template-columns: repeat(2,1fr); } }
+  .metric-tile { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
+  .metric-tile .m-label { font-size: 11px; color: var(--text-tertiary); margin-bottom: 3px; }
+  .metric-tile .m-val { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+
+  /* ── DOMAIN NAV PILLS ── */
+  .domain-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 14px; }
+  .domain-tab {
+    font-size: 11px; padding: 3px 9px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-tertiary);
+    transition: all 0.15s;
+  }
+  .domain-tab.active { color: #fff; border-color: transparent; }
+  .domain-tab.done { background: #dcfce7; border-color: #86efac; color: #14532d; }
+
+  /* ── PROGRESS DOTS ── */
+  .dot-row { display: flex; gap: 4px; flex: 1; }
+  .dot { flex: 1; height: 5px; border-radius: 3px; border: none; padding: 0; cursor: pointer; transition: opacity 0.15s; }
+
+  /* ── SCALE BUTTONS ── */
+  .scale-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; padding-left: 28px; margin-top: 8px; }
+  .scale-btn {
+    padding: 7px 4px; font-size: 11px; border-radius: var(--radius-md);
+    border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary);
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    transition: all 0.12s;
+  }
+  .scale-btn .s-num { font-size: 15px; font-weight: 600; }
+  .scale-btn .s-lbl { font-size: 9px; line-height: 1.2; text-align: center; }
+  .scale-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .scale-btn.selected { color: #fff; border-color: transparent; }
+
+  /* ── INFO BOXES ── */
+  .info-box { border-radius: var(--radius-md); padding: 10px 12px; font-size: 12px; line-height: 1.6; margin-bottom: 14px; border-left: 3px solid; }
+  .research-box { background: #F0F7FF; border-left-color: var(--navy); color: #1e3a8a; }
+
+  /* ── DOMAIN HEADER ── */
+  .domain-header { border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 16px 20px; border-bottom: 1px solid; }
+  .domain-card { border: 2px solid; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-md); }
+  .domain-body { padding: 18px 20px; background: var(--bg-primary); }
+
+  /* ── SCORE RING ── */
+  .score-ring-wrap { display: flex; align-items: center; justify-content: center; }
+
+  /* ── RESULT DOMAIN ROW ── */
+  .result-row {
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg-primary); margin-bottom: 6px; overflow: hidden;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .result-row:hover { box-shadow: var(--shadow-sm); }
+  .result-row.expanded { box-shadow: var(--shadow-md); }
+  .result-row-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .result-row-body { padding: 12px 14px 14px; border-top: 1px solid var(--border); background: var(--bg-secondary); }
+
+  /* ── BAR METER ── */
+  .bar-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+  /* ── PHASE GRID ── */
+  .phase-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  @media(max-width:500px){ .phase-grid{ grid-template-columns: repeat(2,1fr); } }
+  .phase-tile { border-radius: var(--radius-md); padding: 8px 10px; border: 1px solid var(--border); background: var(--bg-primary); }
+  .phase-tile.current { border-width: 2px; }
+
+  /* ── SPLIT PANELS ── */
+  .split-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media(max-width:480px){ .split-2{ grid-template-columns: 1fr; } }
+
+  /* ── QUESTION ITEM ── */
+  .q-item { margin-bottom: 20px; }
+  .q-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .q-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0; margin-top: 2px;
+  }
+  .q-text { font-size: 13px; color: var(--text-primary); line-height: 1.6; flex: 1; }
+
+  /* ── PRINT ── */
+  @media print {
+    .site-header { position: static; }
+    .no-print { display: none !important; }
+    body { background: #fff; }
+    .page { padding: 0; }
+  }
+
+  /* ── SECTION TRANSITIONS ── */
+  .section { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ── TAGS ── */
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; border: 1px solid; }
+
+  /* ── RECO LIST ── */
+  .reco-item { display: flex; gap: 8px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 6px; }
+  .reco-num { font-weight: 600; flex-shrink: 0; }
+
+  /* ── PRINT RESULTS TABLE ── */
+  .print-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  .print-table th { background: var(--navy); color: #fff; padding: 8px 10px; text-align: left; }
+  .print-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .print-table tr:nth-child(even) td { background: var(--bg-secondary); }
+
+  /* ── FOOTER ── */
+  .site-footer { text-align: center; padding: 24px; font-size: 11px; color: var(--text-tertiary); border-top: 1px solid var(--border); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo"><i class="ti ti-clipboard-list"></i></div>
+      <div>
+        <div class="header-title">Community Schools Needs Assessment</div>
+        <div class="header-sub">California Community Schools Partnership Program · 2025</div>
+      </div>
+    </div>
+    <div class="header-badge" id="progressBadge">Intro</div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+</header>
+
+<main class="page">
+  <div id="app"></div>
+</main>
+
+<footer class="site-footer no-print">
+  Grounded in <em>Reimagining the Promise: A Scholarly Examination of California Community Schools</em> (2025) &nbsp;·&nbsp;
+  California Community Schools Partnership Program (CCSPP) &nbsp;·&nbsp; caaasa.org
+</footer>
+
+<script>
+const DOMAINS = [
+  {
+    id:"iss",code:"ISS",title:"Integrated Student Supports",icon:"ti-heart-handshake",
+    color:"#185FA5",bg:"#dbeafe",border:"#93c5fd",textDark:"#1e3a8a",pillar:"Pillar 1",
+    description:"Mental health services, school-based health clinics, attendance interventions, MTSS alignment, and wraparound family supports.",
+    questions:[
+      {id:"iss1",text:"Our school has a full-time, credentialed mental health professional (counselor, psychologist, or social worker) available to students daily."},
+      {id:"iss2",text:"We have a coordinated case management system that connects students to mental health, health, and social services across agencies."},
+      {id:"iss3",text:"Our Multi-Tiered System of Supports (MTSS) is fully aligned with our community school service delivery model."},
+      {id:"iss4",text:"We have a shared data platform that allows our school and community partner agencies to track student needs and service utilization together."},
+      {id:"iss5",text:"Chronic absenteeism is addressed through proactive, relationship-based interventions — not just attendance letters or referrals."}
+    ],
+    researchNote:"California has 1 counselor per 500 students — double the recommended 1:250 ratio (ASCA, 2022). Schools with integrated supports are 10x more likely to improve achievement (Bryk et al., 2010).",
+    recommendations:["Form an Integrated Student Support Team (ISST) with weekly cross-agency case management meetings","Adopt a shared universal screening protocol across academic, behavioral, health, and attendance dimensions","Apply for CCSPP mental health expansion grants to fund additional counseling positions","Audit MTSS tiers to ensure community supports extend — not duplicate — existing school interventions","Partner with a county mental health agency to co-locate services on campus"]
+  },
+  {
+    id:"fce",code:"FCE",title:"Family & Community Engagement",icon:"ti-users",
+    color:"#0F6E56",bg:"#d1fae5",border:"#6ee7b7",textDark:"#064e3b",pillar:"Pillar 2",
+    description:"Home-school partnerships, multilingual communication, parent leadership, community advisory councils, and culturally responsive engagement.",
+    questions:[
+      {id:"fce1",text:"Families from our community hold genuine decision-making authority in our school's governance — not just advisory roles."},
+      {id:"fce2",text:"Our family engagement outreach is conducted in the home languages of our families, by staff who are trusted members of those communities."},
+      {id:"fce3",text:"We conduct structured home visits for students experiencing chronic absenteeism, disengagement, or academic difficulty."},
+      {id:"fce4",text:"Our school provides child care, transportation support, and flexible scheduling to remove participation barriers for families."},
+      {id:"fce5",text:"Family engagement at our school goes beyond events — families are involved in curriculum review, hiring input, and program evaluation."}
+    ],
+    researchNote:"Family engagement is one of the strongest predictors of graduation, attendance, and academic persistence (Henderson & Mapp, 2002). Most CA community school engagement remains tokenistic (Californians for Justice, 2022).",
+    recommendations:["Hire Family Engagement Liaisons from within the community — bilingual, bicultural, trusted","Implement Mapp & Bergman's Dual Capacity-Building Framework for family partnership","Establish a Family Leadership Council with real authority over programming and resource allocation","Replace one-way newsletters with two-way communication strategies (listening sessions, community circles)","Design a home visit program where family voice drives school improvement priorities"]
+  },
+  {
+    id:"cl",code:"CL",title:"Collaborative Leadership",icon:"ti-hierarchy-2",
+    color:"#533AB7",bg:"#ede9fe",border:"#c4b5fd",textDark:"#3730a3",pillar:"Pillar 3",
+    description:"Distributed decision-making, teacher leadership teams, student voice, community school coordinator effectiveness, and equity-centered governance.",
+    questions:[
+      {id:"cl1",text:"Our school has a full-time Community School Coordinator (CSC) with protected time, clear authority, and adequate resources — not just a grant-funded add-on."},
+      {id:"cl2",text:"A Community School Steering Committee meets regularly and makes real decisions about school programming, resource allocation, and community partnerships."},
+      {id:"cl3",text:"Student voice meaningfully shapes school culture, programming, and improvement priorities — not just through student council symbolism."},
+      {id:"cl4",text:"Teacher leaders in our school are involved in instructional planning, community school strategy, and professional learning design."},
+      {id:"cl5",text:"Our school leadership team has received professional development specifically in adaptive leadership, community organizing, and equity-centered systems change."}
+    ],
+    researchNote:"In many CCSPP-funded schools, 'shared governance' is primarily performative (LPI, 2022). The Community School Coordinator is the single most critical structural role for effective implementation (Coalition for Community Schools, 2017).",
+    recommendations:["Audit your CSC role: Does the coordinator have real authority — or just coordination tasks?","Redesign advisory structures so families and teachers make real decisions, not rubber-stamp them","Invest in principal professional development in adaptive leadership (Heifetz & Linsky, 2002)","Create structured student voice mechanisms with school improvement accountability","Move CSC funding from grant-dependent to district-budget to ensure sustainability"]
+  },
+  {
+    id:"el",code:"EL",title:"Expanded & Extended Learning",icon:"ti-school",
+    color:"#854F0B",bg:"#fef3c7",border:"#fcd34d",textDark:"#78350f",pillar:"Pillar 4",
+    description:"After-school enrichment, summer learning, CTE pathways, dual enrollment, project-based learning, and equitable access to expanded opportunities.",
+    questions:[
+      {id:"el1",text:"Our after-school and extended learning programs are explicitly aligned with academic standards and SEL competencies — not just enrichment activities."},
+      {id:"el2",text:"Transportation barriers do not prevent our highest-need students from accessing after-school or extended learning programs."},
+      {id:"el3",text:"Our expanded learning workforce is stable, adequately compensated, and provided with ongoing professional development."},
+      {id:"el4",text:"Career Technical Education (CTE) pathways at our school are aligned with actual regional labor market data and co-designed with community college and employer partners."},
+      {id:"el5",text:"Dual enrollment and work-based learning opportunities are actively promoted to and accessible by our underrepresented student populations (Black, Latino/a, students with IEPs)."}
+    ],
+    researchNote:"The lowest-quality afterschool programs are concentrated in the highest-need schools (Wallace Foundation, 2020). Transportation barriers create a paradox — resources exist but highest-need students can't access them (arXiv, 2023).",
+    recommendations:["Treat transportation as an equity issue — explore district transportation contracts or community shuttle programs","Align afterschool curriculum with core academic standards through quarterly planning meetings with teachers","Build Industry Advisory Boards for each CTE pathway to ensure labor-market alignment","Develop structured, compensated mentorship — not volunteer recruitment","Conduct an access audit: which students are not accessing expanded learning, and why?"]
+  },
+  {
+    id:"sel",code:"SEL",title:"School Climate & SEL",icon:"ti-mood-smile",
+    color:"#993C1D",bg:"#fee2e2",border:"#fca5a5",textDark:"#7f1d1d",pillar:"Cross-Cutting",
+    description:"Social-emotional learning integration, restorative practices, positive school climate, belonging, and trauma-informed approaches across all systems.",
+    questions:[
+      {id:"sel1",text:"SEL at our school is embedded into all instructional, disciplinary, and family communication practices — not confined to a 40-minute weekly lesson block."},
+      {id:"sel2",text:"Restorative justice practices are used as a school-wide discipline philosophy — not as an alternative applied only after exclusionary discipline proves costly."},
+      {id:"sel3",text:"Educators at our school receive ongoing professional development in trauma-informed care and culturally responsive pedagogy."},
+      {id:"sel4",text:"Our school invests in adult SEL and educator well-being as a precondition for effective student SEL implementation."},
+      {id:"sel5",text:"Students from all racial, linguistic, and socioeconomic backgrounds report feeling psychologically safe, valued, and genuinely connected to at least one trusted adult at our school."}
+    ],
+    researchNote:"Fewer than 40% of CA community schools show evidence of systemic SEL integration beyond curriculum (CASEL, 2021). Adult SEL and educator well-being are preconditions for effective student SEL (Cantor et al., 2019).",
+    recommendations:["Implement CASEL's Systemic SEL Framework — align classroom instruction, school-wide practices, and family SEL engagement","Launch restorative circles as a community-building tool (not just a discipline substitute)","Invest in regular educator SEL check-ins, reflection practices, and secondary trauma support","Audit your last 90 days of discipline data: Are restorative practices actually being used?","Survey students anonymously by subgroup on belonging, safety, and trusted adult connection"]
+  },
+  {
+    id:"eq",code:"EQ",title:"Equity & Opportunity Gaps",icon:"ti-scale",
+    color:"#A32D2D",bg:"#fde8e8",border:"#f8b4b4",textDark:"#7f1d1d",pillar:"Cross-Cutting",
+    description:"Closing achievement gaps, reducing discipline disparities, supporting multilingual learners, and centering historically marginalized students.",
+    questions:[
+      {id:"eq1",text:"We regularly disaggregate ALL outcome data (academic, discipline, attendance, program access) by race, income, language, disability, and gender — and share findings publicly."},
+      {id:"eq2",text:"Black, Latino/a, Native American, and Pacific Islander students at our school experience equitable access to advanced coursework, CTE pathways, and enrichment programs."},
+      {id:"eq3",text:"Our school has conducted a formal equity audit in the past two years that has produced concrete, implemented changes to policy, resource allocation, or programming."},
+      {id:"eq4",text:"Multilingual learners, foster youth, homeless youth, and students with disabilities are specifically and meaningfully served by our community school programming."},
+      {id:"eq5",text:"Our school actively works to reduce disproportionate discipline rates by examining referral patterns, suspension data, and teacher perception biases by race."}
+    ],
+    researchNote:"Black, Latino/a, and Pacific Islander students continue to face disproportionate discipline and absenteeism in CCSPP-funded schools (LPI, 2022). Community schools cannot close equity gaps without explicitly naming structural racism (Ladson-Billings, 2006).",
+    recommendations:["Schedule an annual equity audit — treat the findings as a leadership accountability document, not a compliance report","Publish disaggregated data publicly and bring it to your first staff meeting of the year","Challenge your school's tracking systems, referral patterns, and course access data by race","Build a specific outreach strategy for foster youth, homeless students, and undocumented families","Partner with your district's Equity Office to co-design a Black Student Achievement Plan"]
+  },
+  {
+    id:"cp",code:"CP",title:"Community Partnerships",icon:"ti-building-community",
+    color:"#3B6D11",bg:"#dcfce7",border:"#86efac",textDark:"#14532d",pillar:"Pillar 2",
+    description:"Cross-sector collaboration, MOU effectiveness, shared accountability, partner sustainability, and community-serving organizational relationships.",
+    questions:[
+      {id:"cp1",text:"Our community partnerships are built on authentic, trust-based relationships — not just Memoranda of Understanding created for grant compliance."},
+      {id:"cp2",text:"We have a designated Community School Coordinator who manages, nurtures, and evaluates all community partnerships on an ongoing basis."},
+      {id:"cp3",text:"All active community partners share outcome data with our school and are held accountable to agreed-upon student and family impact goals."},
+      {id:"cp4",text:"Our community partnerships have survived at least one grant funding cycle — sustained by shared equity goals, not just funding."},
+      {id:"cp5",text:"Smaller, community-based organizations in our partnerships receive equitable support and compensation relative to larger institutional partners (hospitals, universities)."}
+    ],
+    researchNote:"Many CA community school partnerships exist primarily on paper — MOUs without relational infrastructure, shared accountability, or resource alignment to actually function (LPI, 2022; arXiv, 2023).",
+    recommendations:["Conduct a partnership health check — rate each active MOU on relationship quality, service delivery, and shared accountability","Establish quarterly partnership review meetings facilitated by your CSC","Create shared outcome metrics that all partners are publicly accountable to","Invest in joint partner training and shared data infrastructure","Build your partnership strategy around equity goals, not available funding cycles"]
+  },
+  {
+    id:"wd",code:"WD",title:"Workforce Development",icon:"ti-briefcase",
+    color:"#5F5E5A",bg:"#f3f4f6",border:"#d1d5db",textDark:"#374151",pillar:"Emerging",
+    description:"Career-connected learning, CTE pathways, dual enrollment, mentorship, postsecondary readiness, and workforce preparation pipeline equity.",
+    questions:[
+      {id:"wd1",text:"Students at our school have access to structured, compensated mentorship with professionals who reflect their own racial and cultural backgrounds."},
+      {id:"wd2",text:"Our school counselors have the capacity, training, and time to provide substantive career exploration and postsecondary planning support to all students."},
+      {id:"wd3",text:"CTE pathways at our school are co-designed with employers, community colleges, and students — not developed in isolation by curriculum departments."},
+      {id:"wd4",text:"Dual enrollment opportunities are actively accessible to our highest-need students — we have removed transportation, scheduling, and academic preparation barriers."},
+      {id:"wd5",text:"We track and publicly report on workforce-readiness outcomes by race and gender, specifically monitoring equitable access to high-wage career pathways."}
+    ],
+    researchNote:"Structured mentorship is systemically underfunded — especially for Black and Latino/a males who face the greatest structural barriers to career-pathway access (arXiv, 2023; CCCCO, 2022).",
+    recommendations:["Build a structured, compensated mentorship program — partner with local businesses, colleges, and CBOs","Align CTE pathways with regional labor market data — use employer and community college advisory boards","Actively recruit underrepresented students into dual enrollment through targeted counseling and barrier removal","Ensure counselors have protected time for postsecondary planning — not competing with crisis response","Track career readiness outcomes by race and gender as a core equity metric"]
+  }
+];
+
+const SCALE = [
+  {value:1,label:"Not in place",short:"Not started",color:"#dc2626"},
+  {value:2,label:"Early stages",short:"Early stages",color:"#d97706"},
+  {value:3,label:"Developing",short:"Developing",color:"#b45309"},
+  {value:4,label:"Progressing",short:"Progressing",color:"#15803d"},
+  {value:5,label:"Well established",short:"Strong",color:"#047857"}
+];
+
+const PHASES = [
+  {range:[1,1.99],label:"Foundation Needed",phase:1,color:"#dc2626",bg:"#fee2e2",borderC:"#fca5a5",desc:"Critical gaps require immediate foundational investment. Begin with a comprehensive needs assessment and community school coordinator hire."},
+  {range:[2,2.99],label:"Activation Phase",phase:2,color:"#d97706",bg:"#fef3c7",borderC:"#fcd34d",desc:"Early structures are in place. Focus on launching core programmatic elements with fidelity and community partnership activation."},
+  {range:[3,3.99],label:"Integration Phase",phase:3,color:"#15803d",bg:"#dcfce7",borderC:"#86efac",desc:"Solid foundation established. Deepen cross-system coherence, conduct equity audits, and expand leadership pipelines."},
+  {range:[4,5],label:"Sustainability Phase",phase:4,color:"#047857",bg:"#d1fae5",borderC:"#6ee7b7",desc:"High-performing implementation. Institutionalize in district policy, diversify funding, and become a peer-learning model for other schools."}
+];
+
+// ── STATE ──
+let state = {
+  step: "intro",   // intro | survey | results
+  role: "",
+  schoolName: "",
+  district: "",
+  activeDomain: 0,
+  answers: {},
+  expandedDomain: null,
+  printMode: false
+};
+
+// ── HELPERS ──
+function getPhase(s){ return PHASES.find(p=>s>=p.range[0]&&s<=p.range[1])||PHASES[0]; }
+function domainScore(d){
+  const vals=d.questions.map(q=>state.answers[q.id]).filter(Boolean);
+  if(!vals.length) return 0;
+  return vals.reduce((a,b)=>a+b,0)/vals.length;
+}
+function overallScore(){
+  const scores=DOMAINS.map(domainScore).filter(s=>s>0);
+  if(!scores.length) return 0;
+  return scores.reduce((a,b)=>a+b,0)/scores.length;
+}
+function domainComplete(d){ return d.questions.every(q=>state.answers[q.id]); }
+function allComplete(){ return DOMAINS.every(d=>domainComplete(d)); }
+const totalQs = DOMAINS.reduce((a,d)=>a+d.questions.length,0);
+function answered(){ return Object.keys(state.answers).length; }
+function pct(){ return Math.round((answered()/totalQs)*100); }
+
+// ── SCORE RING SVG ──
+function scoreRingSVG(score, size, stroke, color){
+  const r=(size-stroke*2)/2, circ=2*Math.PI*r, dash=circ*((score-1)/4);
+  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);flex-shrink:0;">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#e5e7eb" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+    <text x="${size/2}" y="${size/2+1}" text-anchor="middle" dominant-baseline="middle"
+      fill="${color}" font-size="12" font-weight="600"
+      style="transform:rotate(90deg);transform-origin:${size/2}px ${size/2}px;font-family:Inter,sans-serif;">
+      ${score<=0?"–":score.toFixed(1)}</text>
+  </svg>`;
+}
+
+// ── RENDER ──
+function render(){
+  const app = document.getElementById("app");
+  const bar = document.getElementById("progressBar");
+  const badge = document.getElementById("progressBadge");
+
+  if(state.step==="intro"){
+    bar.style.width="0%";
+    badge.textContent="Introduction";
+    app.innerHTML = renderIntro();
+  } else if(state.step==="survey"){
+    bar.style.width=pct()+"%";
+    badge.textContent=`Domain ${state.activeDomain+1}/${DOMAINS.length} · ${pct()}%`;
+    app.innerHTML = renderSurvey();
+  } else if(state.step==="results"){
+    bar.style.width="100%";
+    badge.textContent="Results";
+    app.innerHTML = renderResults();
+  }
+  bindEvents();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+// ── INTRO ──
+function renderIntro(){
+  return `<div class="section">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:44px;height:44px;border-radius:10px;background:#1B3A6B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="ti ti-clipboard-list" style="font-size:22px;color:#C9A84C;"></i>
+      </div>
+      <div>
+        <h1 style="font-size:22px;font-weight:700;color:#1B3A6B;line-height:1.2;">Community School Needs Assessment</h1>
+        <p style="font-size:13px;color:#6B7280;margin-top:2px;">Grounded in the CCSPP research framework · Reimagining the Promise (2025)</p>
+      </div>
+    </div>
+    <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:20px;">
+      A research-based diagnostic across the 8 domains of California's Community Schools Partnership Program. Rate your school honestly, identify where you need support, and receive phase-specific recommendations tied directly to the scholarly research base.
+    </p>
+
+    <div class="metric-grid" style="margin-bottom:20px;">
+      <div class="metric-tile"><div class="m-label"><i class="ti ti-layers" style="font-size:11px;margin-right:3px;"></i>Domains</div><div class="m-val">8</div></div>
+      <div class="metric-tile"><div class="m-label"><i class="ti ti-list-check" style="font-size:11px;margin-right:3px;"></i>Questions</div><div class="m-val">40</div></div>
+      <div class="metric-tile"><div class="m-label"><i class="ti ti-clock" style="font-size:11px;margin-right:3px;"></i>Est. time</div><div class="m-val" style="font-size:16px;">~15 min</div></div>
+      <div class="metric-tile"><div class="m-label"><i class="ti ti-map" style="font-size:11px;margin-right:3px;"></i>Phases</div><div class="m-val">4</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <p style="font-size:13px;font-weight:600;color:#111827;margin-bottom:12px;"><i class="ti ti-user" style="font-size:14px;margin-right:5px;"></i>About you</p>
+      <div style="margin-bottom:10px;">
+        <label>Your role *</label>
+        <select id="roleSelect">
+          <option value="">Select your role...</option>
+          ${["Site Principal","Assistant Principal","Community School Coordinator","District Administrator","Superintendent","Teacher / Instructional Coach","School Counselor / Social Worker","Family Engagement Coordinator","Other Education Leader"].map(r=>`<option value="${r}" ${state.role===r?"selected":""}>${r}</option>`).join("")}
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label>School name <span style="color:#9CA3AF;font-weight:400;">(optional)</span></label>
+          <input type="text" id="schoolInput" value="${state.schoolName}" placeholder="Your school"/>
+        </div>
+        <div>
+          <label>District <span style="color:#9CA3AF;font-weight:400;">(optional)</span></label>
+          <input type="text" id="districtInput" value="${state.district}" placeholder="Your district"/>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #1B3A6B;border-radius:8px;padding:12px 14px;margin-bottom:20px;">
+      <p style="font-size:12px;font-weight:600;color:#1e3a8a;margin-bottom:3px;"><i class="ti ti-info-circle" style="font-size:13px;margin-right:4px;"></i>How to use this assessment</p>
+      <p style="font-size:12px;color:#3b82f6;line-height:1.6;margin:0;">Rate each statement on a scale of 1 (not in place) to 5 (well established) based on your honest assessment of current implementation at your school. Results generate a phase-specific action plan tied directly to the CCSPP research framework. There are no right answers — only honest ones.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button class="btn-action" id="startBtn" ${!state.role?"disabled":""}>
+        Begin assessment <i class="ti ti-arrow-right"></i>
+      </button>
+      ${!state.role?`<span style="font-size:12px;color:#9CA3AF;">Please select your role to continue</span>`:""}
+    </div>
+
+    <div class="divider" style="margin-top:28px;"></div>
+    <p style="font-size:12px;color:#9CA3AF;line-height:1.7;">
+      <strong style="color:#6B7280;">Research foundation:</strong> This assessment is grounded in <em>Reimagining the Promise: A Scholarly Examination of California Community Schools</em> (2025), drawing on the Learning Policy Institute, Coalition for Community Schools, CASEL, Bryk et al. (2010), Oakes & Maier (2020), and 39 additional peer-reviewed sources.
+    </p>
+  </div>`;
+}
+
+// ── SURVEY ──
+function renderSurvey(){
+  const d = DOMAINS[state.activeDomain];
+  const dScore = domainScore(d);
+  const ph = getPhase(dScore > 0 ? dScore : 1);
+  const answeredCount = answered();
+  const remaining = totalQs - answeredCount;
+
+  return `<div class="section">
+    <!-- Progress row -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <div class="dot-row">
+        ${DOMAINS.map((dom,i)=>{
+          const comp=domainComplete(dom), active=i===state.activeDomain;
+          return `<button class="dot no-print" data-goto="${i}" title="${dom.title}"
+            style="background:${active?dom.color:comp?"#15803d":"#E5E7EB"};opacity:${active?1:0.7};"></button>`;
+        }).join("")}
+      </div>
+      <span style="font-size:12px;color:#6B7280;flex-shrink:0;">${pct()}% · ${answeredCount}/${totalQs}</span>
+    </div>
+
+    <!-- Domain card -->
+    <div class="domain-card" style="border-color:${d.color};">
+      <div class="domain-header" style="background:${d.bg};border-color:${d.border};">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:9px;background:${d.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ${d.icon}" style="font-size:18px;color:white;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:10px;font-weight:700;color:${d.textDark};letter-spacing:0.07em;text-transform:uppercase;margin-bottom:1px;">
+              Domain ${state.activeDomain+1} of ${DOMAINS.length} &nbsp;·&nbsp; ${d.pillar}
+            </div>
+            <h2 style="font-size:17px;font-weight:700;color:${d.textDark};margin:0;">${d.title}</h2>
+          </div>
+          ${dScore>0?`<div style="margin-left:auto;">${scoreRingSVG(dScore,52,5,ph.color)}</div>`:""}
+        </div>
+        <p style="font-size:12px;color:${d.color};margin:7px 0 0;line-height:1.5;">${d.description}</p>
+      </div>
+
+      <div class="domain-body">
+        <div class="info-box research-box">
+          <i class="ti ti-microscope" style="font-size:12px;margin-right:4px;"></i>
+          <strong>Research context:</strong> ${d.researchNote}
+        </div>
+
+        ${d.questions.map((q,qi)=>{
+          const val = state.answers[q.id]||0;
+          return `<div class="q-item">
+            <div class="q-row">
+              <div class="q-num" style="background:${d.bg};color:${d.color};">${qi+1}</div>
+              <p class="q-text">${q.text}</p>
+            </div>
+            <div class="scale-grid">
+              ${SCALE.map(s=>`
+                <button class="scale-btn ${val===s.value?"selected":""} no-print" data-qid="${q.id}" data-val="${s.value}"
+                  style="${val===s.value?`background:${s.color};border-color:${s.color};`:""}">
+                  <span class="s-num">${s.value}</span>
+                  <span class="s-lbl">${s.label}</span>
+                </button>
+              `).join("")}
+            </div>
+            ${val>0?`<p style="font-size:11px;color:${SCALE.find(s=>s.value===val).color};margin:4px 0 0 28px;font-weight:500;">
+              <i class="ti ti-check" style="font-size:10px;margin-right:3px;"></i>Rated: ${SCALE.find(s=>s.value===val).label}
+            </p>`:""}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;">
+        ${state.activeDomain>0?`<button id="prevBtn"><i class="ti ti-arrow-left"></i> Back</button>`:""}
+        ${state.activeDomain<DOMAINS.length-1?`<button id="nextBtn">Next domain <i class="ti ti-arrow-right"></i></button>`:""}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        ${allComplete()?`<button class="btn-success" id="viewResultsBtn">View results <i class="ti ti-chart-bar"></i></button>`:
+          `<span style="font-size:11px;color:#9CA3AF;">${remaining} question${remaining===1?"":"s"} remaining</span>`}
+        ${answered()>0&&!allComplete()?`<button id="partialResultsBtn" style="font-size:12px;">Partial results</button>`:""}
+      </div>
+    </div>
+
+    <!-- Domain tabs -->
+    <div class="domain-tabs no-print">
+      ${DOMAINS.map((dom,i)=>{
+        const comp=domainComplete(dom), active=i===state.activeDomain;
+        return `<button class="domain-tab ${active?"active":""} ${comp&&!active?"done":""}"
+          data-goto="${i}"
+          style="${active?`background:${dom.color};border-color:${dom.color};color:white;`:""}">
+          ${comp&&!active?`<i class="ti ti-check" style="font-size:10px;margin-right:2px;"></i>`:""}${dom.code}
+        </button>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+
+// ── RESULTS ──
+function renderResults(){
+  const ov = overallScore();
+  const ovPh = getPhase(ov>0?ov:1);
+  const sorted = [...DOMAINS].map(d=>({...d,score:domainScore(d)})).sort((a,b)=>a.score-b.score);
+  const priority = sorted.slice(0,3);
+  const strengths = sorted.slice(-2).reverse();
+  const school = state.schoolName||"Your school";
+  const date = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+
+  return `<div class="section">
+    <!-- Header summary -->
+    <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap;">
+      ${scoreRingSVG(ov,80,7,ovPh.color)}
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:11px;color:#9CA3AF;letter-spacing:0.05em;margin-bottom:3px;text-transform:uppercase;">${school} &nbsp;·&nbsp; ${state.role} &nbsp;·&nbsp; ${date}</div>
+        <h1 style="font-size:22px;font-weight:700;color:#111827;margin:0 0 8px;">Assessment Results</h1>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:${ovPh.bg};border:1.5px solid ${ovPh.color};border-radius:20px;padding:4px 12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${ovPh.color};"></div>
+          <span style="font-size:12px;font-weight:600;color:${ovPh.color};">${ovPh.label}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:${ovPh.bg};border:1px solid ${ovPh.borderC};border-left:4px solid ${ovPh.color};border-radius:8px;padding:11px 13px;margin-bottom:18px;font-size:13px;color:${ovPh.color};line-height:1.6;">
+      <strong>What this means:</strong> ${ovPh.desc}
+    </div>
+
+    <!-- Priority & Strengths -->
+    <div class="split-2" style="margin-bottom:18px;">
+      <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:14px 16px;">
+        <p style="font-size:11px;font-weight:700;color:#7f1d1d;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">
+          <i class="ti ti-alert-triangle" style="font-size:12px;margin-right:4px;"></i>Priority areas
+        </p>
+        ${priority.map(d=>`
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#dc2626;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:#7f1d1d;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.title}</span>
+            <span style="font-size:12px;font-weight:700;color:#dc2626;">${d.score.toFixed(1)}</span>
+          </div>`).join("")}
+      </div>
+      <div style="background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:14px 16px;">
+        <p style="font-size:11px;font-weight:700;color:#14532d;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">
+          <i class="ti ti-star" style="font-size:12px;margin-right:4px;"></i>Relative strengths
+        </p>
+        ${strengths.map(d=>`
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#15803d;flex-shrink:0;"></div>
+            <span style="font-size:12px;color:#14532d;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.title}</span>
+            <span style="font-size:12px;font-weight:700;color:#15803d;">${d.score.toFixed(1)}</span>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <!-- All domains -->
+    <p style="font-size:13px;font-weight:600;color:#111827;margin-bottom:10px;">All domains — click to expand recommendations</p>
+    ${DOMAINS.map(d=>{
+      const s=domainScore(d), ph=getPhase(s>0?s:1);
+      const isExp=state.expandedDomain===d.id;
+      const sc=SCALE.find(x=>x.value===Math.round(s));
+      return `
+      <div class="result-row ${isExp?"expanded":""}" data-expand="${d.id}" style="${isExp?`border-color:${d.color};border-width:1.5px;`:""}">
+        <div class="result-row-header">
+          <div style="width:32px;height:32px;border-radius:7px;background:${d.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ${d.icon}" style="font-size:15px;color:${d.color};"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span style="font-size:13px;font-weight:600;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.title}</span>
+              <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                <span style="font-size:14px;font-weight:700;color:${ph.color};">${s>0?s.toFixed(1):"–"}</span>
+                <span style="font-size:10px;color:#9CA3AF;">${s>0&&sc?sc.short:"–"}</span>
+                <i class="ti ti-chevron-${isExp?"up":"down"}" style="font-size:12px;color:#9CA3AF;"></i>
+              </div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${s>0?((s-1)/4)*100:0}%;background:${ph.color};"></div></div>
+          </div>
+        </div>
+        ${isExp?`
+        <div class="result-row-body">
+          <div style="background:${d.bg};border:1px solid ${d.border};border-radius:7px;padding:9px 11px;margin-bottom:12px;">
+            <p style="font-size:11px;font-weight:600;color:${d.textDark};margin-bottom:3px;"><i class="ti ti-microscope" style="font-size:11px;margin-right:4px;"></i>Research context</p>
+            <p style="font-size:11px;color:${d.color};margin:0;line-height:1.5;">${d.researchNote}</p>
+          </div>
+          <p style="font-size:12px;font-weight:600;color:#111827;margin-bottom:8px;"><i class="ti ti-list-check" style="font-size:13px;margin-right:4px;"></i>Recommended actions</p>
+          ${d.recommendations.map((r,i)=>`<div class="reco-item"><span class="reco-num" style="color:${d.color};">${i+1}.</span><span>${r}</span></div>`).join("")}
+          <div class="divider"></div>
+          <p style="font-size:12px;font-weight:600;color:#111827;margin-bottom:7px;">Question-level responses</p>
+          ${d.questions.map(q=>{
+            const val=state.answers[q.id]||0;
+            const qsc=SCALE.find(s=>s.value===val);
+            return `<div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#6B7280;margin-bottom:5px;line-height:1.5;">
+              <div style="width:7px;height:7px;border-radius:2px;background:${qsc?.color||"#E5E7EB"};margin-top:3px;flex-shrink:0;"></div>
+              <span style="flex:1;">${q.text}</span>
+              <span style="font-weight:600;color:${qsc?.color||"#9CA3AF"};flex-shrink:0;min-width:64px;text-align:right;">${qsc?.short||"—"}</span>
+            </div>`;
+          }).join("")}
+        </div>`:""}
+      </div>`;
+    }).join("")}
+
+    <!-- Phase framework -->
+    <div class="card" style="margin-top:18px;margin-bottom:18px;">
+      <p style="font-size:13px;font-weight:600;color:#111827;margin-bottom:12px;"><i class="ti ti-map" style="font-size:14px;margin-right:5px;"></i>Four-phase implementation framework</p>
+      <div class="phase-grid">
+        ${PHASES.map(p=>`
+          <div class="phase-tile ${ovPh.phase===p.phase?"current":""}"
+            style="${ovPh.phase===p.phase?`background:${p.bg};border-color:${p.color};`:""}">
+            <div style="font-size:10px;font-weight:700;color:${p.color};margin-bottom:2px;letter-spacing:0.04em;">PHASE ${p.phase}</div>
+            <div style="font-size:12px;font-weight:${ovPh.phase===p.phase?600:400};color:${ovPh.phase===p.phase?p.color:"#6B7280"};">${p.label}</div>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Print table (shown in print only) -->
+    <div class="print-only" style="display:none;">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;color:#1B3A6B;">Domain Score Summary</h3>
+      <table class="print-table">
+        <thead><tr><th>Domain</th><th>Pillar</th><th>Score</th><th>Level</th></tr></thead>
+        <tbody>
+          ${DOMAINS.map(d=>{
+            const s=domainScore(d),sc=SCALE.find(x=>x.value===Math.round(s));
+            return `<tr><td><strong>${d.title}</strong></td><td>${d.pillar}</td><td style="color:${getPhase(s>0?s:1).color};font-weight:600;">${s>0?s.toFixed(1):"—"}</td><td>${s>0&&sc?sc.label:"Not rated"}</td></tr>`;
+          }).join("")}
+          <tr style="background:#F3F4F6;"><td><strong>Overall</strong></td><td></td><td style="color:${ovPh.color};font-weight:700;">${ov>0?ov.toFixed(1):"—"}</td><td><strong>${ovPh.label}</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+      <button id="retakeBtn"><i class="ti ti-refresh"></i> Retake assessment</button>
+      <button class="btn-primary" id="printBtn"><i class="ti ti-printer"></i> Print / Save PDF</button>
+    </div>
+  </div>`;
+}
+
+// ── BIND EVENTS ──
+function bindEvents(){
+  // Intro
+  const roleSelect = document.getElementById("roleSelect");
+  if(roleSelect) roleSelect.addEventListener("change", e=>{ state.role=e.target.value; render(); });
+  const schoolInput = document.getElementById("schoolInput");
+  if(schoolInput) schoolInput.addEventListener("input", e=>{ state.schoolName=e.target.value; });
+  const districtInput = document.getElementById("districtInput");
+  if(districtInput) districtInput.addEventListener("input", e=>{ state.district=e.target.value; });
+  const startBtn = document.getElementById("startBtn");
+  if(startBtn) startBtn.addEventListener("click", ()=>{ if(state.role){ state.step="survey"; state.activeDomain=0; render(); } });
+
+  // Survey nav
+  const prevBtn = document.getElementById("prevBtn");
+  if(prevBtn) prevBtn.addEventListener("click",()=>{ state.activeDomain--; render(); });
+  const nextBtn = document.getElementById("nextBtn");
+  if(nextBtn) nextBtn.addEventListener("click",()=>{ state.activeDomain++; render(); });
+  const viewResultsBtn = document.getElementById("viewResultsBtn");
+  if(viewResultsBtn) viewResultsBtn.addEventListener("click",()=>{ state.step="results"; render(); });
+  const partialResultsBtn = document.getElementById("partialResultsBtn");
+  if(partialResultsBtn) partialResultsBtn.addEventListener("click",()=>{ state.step="results"; render(); });
+
+  // Scale buttons
+  document.querySelectorAll(".scale-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const qid=btn.dataset.qid, val=parseInt(btn.dataset.val);
+      state.answers[qid]=val;
+      render();
+    });
+  });
+
+  // Domain dots & tabs
+  document.querySelectorAll("[data-goto]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.activeDomain=parseInt(btn.dataset.goto); render(); });
+  });
+
+  // Expand rows
+  document.querySelectorAll("[data-expand]").forEach(row=>{
+    row.addEventListener("click",()=>{
+      const id=row.dataset.expand;
+      state.expandedDomain=(state.expandedDomain===id?null:id);
+      render();
+    });
+  });
+
+  // Results actions
+  const retakeBtn=document.getElementById("retakeBtn");
+  if(retakeBtn) retakeBtn.addEventListener("click",()=>{ state.step="survey"; state.activeDomain=0; state.expandedDomain=null; render(); });
+
+  const printBtn=document.getElementById("printBtn");
+  if(printBtn) printBtn.addEventListener("click",()=>{
+    document.querySelectorAll(".print-only").forEach(el=>el.style.display="block");
+    window.print();
+    setTimeout(()=>{ document.querySelectorAll(".print-only").forEach(el=>el.style.display="none"); }, 1000);
+  });
+}
+
+// ── PRINT STYLES (injected at runtime) ──
+const printStyle = document.createElement("style");
+printStyle.textContent = `
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .site-header { position: static !important; background: #1B3A6B !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .site-footer { display: none !important; }
+  body { background: white !important; font-size: 11px; }
+  .result-row-body { display: block !important; }
+  .domain-card { page-break-inside: avoid; }
+  @page { margin: 0.6in; }
+}`;
+document.head.appendChild(printStyle);
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>
