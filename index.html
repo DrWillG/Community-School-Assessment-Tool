@@ -97,7 +97,7 @@
   .btn-action:hover { background: #254a8a; }
 
   /* ── FORMS ── */
-  select, input[type="text"] {
+  select, input[type="text"], input[type="email"], input[type="tel"] {
     font-family: inherit; font-size: 13px; width: 100%;
     border: 1px solid var(--border-med); border-radius: var(--radius-md);
     padding: 9px 11px; background: var(--bg-primary); color: var(--text-primary);
@@ -107,6 +107,9 @@
   select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
   select:focus, input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,58,107,0.12); }
   label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+  input.invalid { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.10); }
+  .field-error { font-size: 11px; color: #dc2626; margin-top: 4px; display: none; }
+  .field-error.visible { display: block; }
 
   /* ── METRIC TILES ── */
   .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
@@ -131,6 +134,7 @@
 
   /* ── SCALE BUTTONS ── */
   .scale-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; padding-left: 28px; margin-top: 8px; }
+  .scale-grid-na { display: grid; grid-template-columns: repeat(5,1fr) 1.2fr; gap: 6px; padding-left: 28px; margin-top: 8px; }
   .scale-btn {
     padding: 7px 4px; font-size: 11px; border-radius: var(--radius-md);
     border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-secondary);
@@ -140,6 +144,8 @@
   .scale-btn .s-num { font-size: 15px; font-weight: 600; }
   .scale-btn .s-lbl { font-size: 9px; line-height: 1.2; text-align: center; }
   .scale-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .scale-btn-na { border-style: dashed; }
+  .scale-btn-na.selected { background: #6B7280 !important; border-color: #6B7280 !important; }
   .scale-btn.selected { color: #fff; border-color: transparent; }
 
   /* ── INFO BOXES ── */
@@ -219,6 +225,14 @@
 
   /* ── FOOTER ── */
   .site-footer { text-align: center; padding: 24px; font-size: 11px; color: var(--text-tertiary); border-top: 1px solid var(--border); margin-top: 40px; }
+
+  /* ── SUBMISSION BANNER ── */
+  .submit-banner { border-radius: var(--radius-md); padding: 10px 14px; font-size: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .submit-banner.pending { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+  .submit-banner.success { background: #dcfce7; border: 1px solid #86efac; color: #14532d; }
+  .submit-banner.error   { background: #fee2e2; border: 1px solid #fca5a5; color: #7f1d1d; }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -367,7 +381,8 @@ const SCALE = [
   {value:2,label:"Early stages",short:"Early stages",color:"#d97706"},
   {value:3,label:"Developing",short:"Developing",color:"#b45309"},
   {value:4,label:"Progressing",short:"Progressing",color:"#15803d"},
-  {value:5,label:"Well established",short:"Strong",color:"#047857"}
+  {value:5,label:"Well established",short:"Strong",color:"#047857"},
+  {value:0,label:"Not Applicable",short:"N/A",color:"#6B7280"}
 ];
 
 const PHASES = [
@@ -378,15 +393,41 @@ const PHASES = [
 ];
 
 // ── STATE ──
+// ── SMARTSHEET CONFIG ──
+const SS_SHEET_ID = 475244627185540;
+const SS_COL = {
+  submissionId:   5341475566292868,
+  submissionDate: 3089675752607620,
+  role:           7593275379978116,
+  schoolName:     1963775845764996,
+  district:       6467375473135492,
+  email:          4215575659450244,
+  phone:          8719175286820740,
+  overallScore:   2911848805732228,
+  phase:          7415448433102724,
+  iss:            1785948898889604,
+  fce:            6289548526260100,
+  cl:             4037748712574852,
+  el:             8541348339945348,
+  sel:             378574015336324,
+  eq:             4882173642706820,
+  cp:             2630373829021572,
+  wd:             7133973456392068,
+  priorityAreas:  1504473922178948,
+  strengths:      6008073549549444
+};
+
 let state = {
   step: "intro",   // intro | survey | results
   role: "",
   schoolName: "",
   district: "",
+  email: "",
+  phone: "",
   activeDomain: 0,
   answers: {},
   expandedDomain: null,
-  printMode: false
+  submitStatus: "idle"  // idle | pending | success | error
 };
 
 // ── HELPERS ──
@@ -401,11 +442,13 @@ function overallScore(){
   if(!scores.length) return 0;
   return scores.reduce((a,b)=>a+b,0)/scores.length;
 }
-function domainComplete(d){ return d.questions.every(q=>state.answers[q.id]); }
+function domainComplete(d){ return d.questions.every(q=>state.answers[q.id]!==undefined&&state.answers[q.id]!==null); }
 function allComplete(){ return DOMAINS.every(d=>domainComplete(d)); }
 const totalQs = DOMAINS.reduce((a,d)=>a+d.questions.length,0);
-function answered(){ return Object.keys(state.answers).length; }
+function answered(){ return Object.values(state.answers).filter(v=>v!==undefined&&v!==null).length; }
 function pct(){ return Math.round((answered()/totalQs)*100); }
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function isValidPhone(v){ return /^[\d\s\(\)\-\+\.]{7,20}$/.test(v.trim()); }
 
 // ── SCORE RING SVG ──
 function scoreRingSVG(score, size, stroke, color){
@@ -419,6 +462,80 @@ function scoreRingSVG(score, size, stroke, color){
       style="transform:rotate(90deg);transform-origin:${size/2}px ${size/2}px;font-family:Inter,sans-serif;">
       ${score<=0?"–":score.toFixed(1)}</text>
   </svg>`;
+}
+
+
+// ── SMARTSHEET SUBMISSION ──
+async function submitToSmartsheet(){
+  if(state.submitStatus==="success"||state.submitStatus==="pending") return;
+  state.submitStatus="pending";
+  updateSubmitBanner();
+
+  const ov=overallScore(), ovPh=getPhase(ov>0?ov:1);
+  const sorted=[...DOMAINS].map(d=>({...d,score:domainScore(d)})).sort((a,b)=>a.score-b.score);
+  const today=new Date().toISOString().split("T")[0];
+  const subId="CSNA-"+Date.now();
+
+  const cells=[
+    {columnId:SS_COL.submissionId,  value:subId},
+    {columnId:SS_COL.submissionDate,value:today},
+    {columnId:SS_COL.role,          value:state.role},
+    {columnId:SS_COL.schoolName,    value:state.schoolName||""},
+    {columnId:SS_COL.district,      value:state.district||""},
+    {columnId:SS_COL.email,         value:state.email},
+    {columnId:SS_COL.phone,         value:state.phone},
+    {columnId:SS_COL.overallScore,  value:ov>0?parseFloat(ov.toFixed(2)):0},
+    {columnId:SS_COL.phase,         value:ovPh.label},
+    {columnId:SS_COL.iss,           value:parseFloat((domainScore(DOMAINS[0])||0).toFixed(2))},
+    {columnId:SS_COL.fce,           value:parseFloat((domainScore(DOMAINS[1])||0).toFixed(2))},
+    {columnId:SS_COL.cl,            value:parseFloat((domainScore(DOMAINS[2])||0).toFixed(2))},
+    {columnId:SS_COL.el,            value:parseFloat((domainScore(DOMAINS[3])||0).toFixed(2))},
+    {columnId:SS_COL.sel,           value:parseFloat((domainScore(DOMAINS[4])||0).toFixed(2))},
+    {columnId:SS_COL.eq,            value:parseFloat((domainScore(DOMAINS[5])||0).toFixed(2))},
+    {columnId:SS_COL.cp,            value:parseFloat((domainScore(DOMAINS[6])||0).toFixed(2))},
+    {columnId:SS_COL.wd,            value:parseFloat((domainScore(DOMAINS[7])||0).toFixed(2))},
+    {columnId:SS_COL.priorityAreas, value:sorted.slice(0,3).map(d=>d.title).join(", ")},
+    {columnId:SS_COL.strengths,     value:sorted.slice(-2).reverse().map(d=>d.title).join(", ")}
+  ];
+
+  const prompt=`Add a row to Smartsheet sheet ID ${SS_SHEET_ID} with these exact cell values:\n`+
+    cells.map(c=>`columnId ${c.columnId}: ${JSON.stringify(c.value)}`).join("\n")+
+    `\nUse the add_rows tool. Confirm with SUCCESS when done.`;
+
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        mcp_servers:[{type:"url",url:"https://mcp.smartsheet.com",name:"smartsheet-mcp"}],
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data=await res.json();
+    if(res.ok && !data.error){ state.submitStatus="success"; }
+    else { console.error("Smartsheet error:",data); state.submitStatus="error"; }
+  } catch(err){
+    console.error("Submit failed:",err);
+    state.submitStatus="error";
+  }
+  updateSubmitBanner();
+}
+
+function updateSubmitBanner(){
+  const banner=document.getElementById("submitBanner");
+  if(!banner) return;
+  if(state.submitStatus==="pending"||state.submitStatus==="idle"){
+    banner.className="submit-banner pending";
+    banner.innerHTML=`<i class="ti ti-loader spin"></i> <span>Saving your assessment to Smartsheet…</span>`;
+  } else if(state.submitStatus==="success"){
+    banner.className="submit-banner success";
+    banner.innerHTML=`<i class="ti ti-circle-check" style="font-size:16px;"></i> <span><strong>Saved to Smartsheet.</strong> Your response has been recorded in the CAAASA 2026 workspace.</span>`;
+  } else {
+    banner.className="submit-banner error";
+    banner.innerHTML=`<i class="ti ti-alert-circle"></i> <span>Could not save to Smartsheet — check your connection. Results are still shown below.</span>`;
+  }
 }
 
 // ── RENDER ──
@@ -439,6 +556,7 @@ function render(){
     bar.style.width="100%";
     badge.textContent="Results";
     app.innerHTML = renderResults();
+    submitToSmartsheet();
   }
   bindEvents();
   window.scrollTo({top:0, behavior:"smooth"});
@@ -469,6 +587,8 @@ function renderIntro(){
 
     <div class="card" style="margin-bottom:14px;">
       <p style="font-size:13px;font-weight:600;color:#111827;margin-bottom:12px;"><i class="ti ti-user" style="font-size:14px;margin-right:5px;"></i>About you</p>
+
+      <!-- Role -->
       <div style="margin-bottom:10px;">
         <label>Your role *</label>
         <select id="roleSelect">
@@ -476,7 +596,9 @@ function renderIntro(){
           ${["Site Principal","Assistant Principal","Community School Coordinator","District Administrator","Superintendent","Teacher / Instructional Coach","School Counselor / Social Worker","Family Engagement Coordinator","Other Education Leader"].map(r=>`<option value="${r}" ${state.role===r?"selected":""}>${r}</option>`).join("")}
         </select>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+      <!-- School & District -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
         <div>
           <label>School name <span style="color:#9CA3AF;font-weight:400;">(optional)</span></label>
           <input type="text" id="schoolInput" value="${state.schoolName}" placeholder="Your school"/>
@@ -484,6 +606,20 @@ function renderIntro(){
         <div>
           <label>District <span style="color:#9CA3AF;font-weight:400;">(optional)</span></label>
           <input type="text" id="districtInput" value="${state.district}" placeholder="Your district"/>
+        </div>
+      </div>
+
+      <!-- Email & Phone -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label><i class="ti ti-mail" style="font-size:11px;margin-right:3px;"></i>Email address *</label>
+          <input type="email" id="emailInput" value="${state.email}" placeholder="you@school.edu"/>
+          <div class="field-error" id="emailError">Please enter a valid email address.</div>
+        </div>
+        <div>
+          <label><i class="ti ti-phone" style="font-size:11px;margin-right:3px;"></i>Phone number *</label>
+          <input type="tel" id="phoneInput" value="${state.phone}" placeholder="(555) 000-0000"/>
+          <div class="field-error" id="phoneError">Please enter a valid phone number.</div>
         </div>
       </div>
     </div>
@@ -559,17 +695,19 @@ function renderSurvey(){
               <div class="q-num" style="background:${d.bg};color:${d.color};">${qi+1}</div>
               <p class="q-text">${q.text}</p>
             </div>
-            <div class="scale-grid">
+            <div class="scale-grid-na">
               ${SCALE.map(s=>`
-                <button class="scale-btn ${val===s.value?"selected":""} no-print" data-qid="${q.id}" data-val="${s.value}"
+                <button class="scale-btn ${val===s.value?"selected":""} no-print${s.value===0?" scale-btn-na":""}" data-qid="${q.id}" data-val="${s.value}"
                   style="${val===s.value?`background:${s.color};border-color:${s.color};`:""}">
-                  <span class="s-num">${s.value}</span>
+                  <span class="s-num" style="${s.value===0?"font-size:11px;":""}">${s.value===0?"N/A":s.value}</span>
                   <span class="s-lbl">${s.label}</span>
                 </button>
               `).join("")}
             </div>
-            ${val>0?`<p style="font-size:11px;color:${SCALE.find(s=>s.value===val).color};margin:4px 0 0 28px;font-weight:500;">
-              <i class="ti ti-check" style="font-size:10px;margin-right:3px;"></i>Rated: ${SCALE.find(s=>s.value===val).label}
+            ${val!==0&&val>0?`<p style="font-size:11px;color:${SCALE.find(s=>s.value===val)?.color||"#6B7280"};margin:4px 0 0 28px;font-weight:500;">
+              <i class="ti ti-check" style="font-size:10px;margin-right:3px;"></i>Rated: ${SCALE.find(s=>s.value===val)?.label||""}
+            </p>`:val===0?`<p style="font-size:11px;color:#6B7280;margin:4px 0 0 28px;font-weight:500;">
+              <i class="ti ti-minus" style="font-size:10px;margin-right:3px;"></i>Marked: Not Applicable
             </p>`:""}
           </div>`;
         }).join("")}
@@ -614,6 +752,11 @@ function renderResults(){
   const date = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
 
   return `<div class="section">
+    <!-- Smartsheet submission banner -->
+    <div id="submitBanner" class="submit-banner pending">
+      <i class="ti ti-loader spin"></i> <span>Saving your assessment to Smartsheet…</span>
+    </div>
+
     <!-- Header summary -->
     <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap;">
       ${scoreRingSVG(ov,80,7,ovPh.color)}
@@ -630,6 +773,14 @@ function renderResults(){
     <div style="background:${ovPh.bg};border:1px solid ${ovPh.borderC};border-left:4px solid ${ovPh.color};border-radius:8px;padding:11px 13px;margin-bottom:18px;font-size:13px;color:${ovPh.color};line-height:1.6;">
       <strong>What this means:</strong> ${ovPh.desc}
     </div>
+
+    <!-- Contact summary (shown on results) -->
+    ${(state.email||state.phone)?`
+    <div style="background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;"><i class="ti ti-id-badge" style="font-size:12px;margin-right:4px;"></i>Contact on file</span>
+      ${state.email?`<span style="font-size:12px;color:#374151;"><i class="ti ti-mail" style="font-size:11px;margin-right:3px;color:#9CA3AF;"></i>${state.email}</span>`:""}
+      ${state.phone?`<span style="font-size:12px;color:#374151;"><i class="ti ti-phone" style="font-size:11px;margin-right:3px;color:#9CA3AF;"></i>${state.phone}</span>`:""}
+    </div>`:""}
 
     <!-- Priority & Strengths -->
     <div class="split-2" style="margin-bottom:18px;">
@@ -732,6 +883,90 @@ function renderResults(){
       </table>
     </div>
 
+
+    <!-- Research-based improvement examples -->
+    <div class="card" style="margin-top:18px;margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="width:36px;height:36px;border-radius:9px;background:#1B3A6B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="ti ti-book-2" style="font-size:18px;color:#C9A84C;"></i>
+        </div>
+        <div>
+          <h2 style="font-size:15px;font-weight:700;color:#1B3A6B;margin:0;">Research-Based Improvement Examples</h2>
+          <p style="font-size:11px;color:#6B7280;margin:2px 0 0;">How high-performing institutions raised their community school scores</p>
+        </div>
+      </div>
+
+      <!-- Example 1 -->
+      <div style="border:1px solid #bfdbfe;border-left:4px solid #185FA5;border-radius:8px;padding:14px 16px;margin-bottom:12px;background:#f0f7ff;">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:13px;font-weight:700;color:#fff;">1</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#1e3a8a;margin:0 0 3px;">Integrated Student Supports + Collaborative Leadership: The Cincinnati Community Learning Centers Model</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <span style="font-size:10px;font-weight:600;background:#dbeafe;color:#1e3a8a;padding:2px 8px;border-radius:20px;border:1px solid #93c5fd;">Pillar 1</span>
+              <span style="font-size:10px;font-weight:600;background:#ede9fe;color:#3730a3;padding:2px 8px;border-radius:20px;border:1px solid #c4b5fd;">Pillar 3</span>
+            </div>
+            <p style="font-size:12px;color:#1e3a8a;line-height:1.7;margin:0 0 8px;">Cincinnati Public Schools transformed 53 schools into full-service community learning centers by embedding a dedicated Community Learning Center Director at every site — distinct from the principal — with explicit authority over partnership management, resource allocation, and community engagement. The district simultaneously established cross-agency data sharing agreements with Cincinnati Children's Hospital Medical Center, enabling coordinated case management for students with health, behavioral, and academic needs.</p>
+            <p style="font-size:12px;color:#1e3a8a;line-height:1.7;margin:0 0 8px;"><strong>Result:</strong> A longitudinal study by Jacobson et al. (2013) found that students in Cincinnati CLCs demonstrated significantly higher attendance rates, reduced disciplinary incidents, and improved reading achievement compared to matched peers in non-CLC schools. Chronic absenteeism dropped by 18% district-wide over five years.</p>
+            <div style="background:#dbeafe;border-radius:6px;padding:8px 10px;margin-top:8px;">
+              <p style="font-size:11px;font-weight:600;color:#1e3a8a;margin:0 0 3px;"><i class="ti ti-bulb" style="font-size:11px;margin-right:3px;"></i>Replication Strategy</p>
+              <p style="font-size:11px;color:#185FA5;margin:0;line-height:1.6;">Audit your Community School Coordinator role. If your CSC is buried in logistics rather than leading strategy and community relationships, restructure the position. Bryk et al. (2010) identify a strong instructional and social support infrastructure as one of five essential organizational supports — without explicit leadership authority, integration fails.</p>
+            </div>
+            <p style="font-size:10px;color:#6B7280;margin-top:8px;font-style:italic;">Sources: Jacobson, R., Hodges, C., &amp; Blank, M. (2013). <em>Mutual support: The aligned initiatives of full-service community schools.</em> Coalition for Community Schools. | Bryk, A. S., Sebring, P. B., Allensworth, E., Luppescu, S., &amp; Easton, J. Q. (2010). <em>Organizing schools for improvement.</em> University of Chicago Press.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div style="border:1px solid #d1fae5;border-left:4px solid #0F6E56;border-radius:8px;padding:14px 16px;margin-bottom:12px;background:#f0fdf4;">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0F6E56;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:13px;font-weight:700;color:#fff;">2</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#064e3b;margin:0 0 3px;">Family & Community Engagement + Equity: The Harlem Children's Zone Dual-Generation Approach</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <span style="font-size:10px;font-weight:600;background:#d1fae5;color:#064e3b;padding:2px 8px;border-radius:20px;border:1px solid #6ee7b7;">Pillar 2</span>
+              <span style="font-size:10px;font-weight:600;background:#fde8e8;color:#7f1d1d;padding:2px 8px;border-radius:20px;border:1px solid #f8b4b4;">Equity</span>
+            </div>
+            <p style="font-size:12px;color:#065f46;line-height:1.7;margin:0 0 8px;">The Harlem Children's Zone (HCZ) operationalized a dual-generation model in which family engagement is not an add-on but the organizing philosophy of the entire system. Rather than inviting families to school events, HCZ embedded "Baby College" parenting workshops, adult literacy programs, and financial coaching directly into the community — removing the expectation that families come to the institution. Family liaisons were recruited exclusively from the community and compensated at professional rates.</p>
+            <p style="font-size:12px;color:#065f46;line-height:1.7;margin:0 0 8px;"><strong>Result:</strong> Dobbie &amp; Fryer (2011) found that HCZ students were "college-ready" at rates comparable to suburban peers, attributing outcomes specifically to the combination of high-dosage tutoring and intensive family engagement — neither component alone was sufficient. Henderson &amp; Mapp (2002) meta-analysis of 51 studies confirms: when families are partners in learning rather than recipients of communication, student achievement gains are two to three times larger.</p>
+            <div style="background:#d1fae5;border-radius:6px;padding:8px 10px;margin-top:8px;">
+              <p style="font-size:11px;font-weight:600;color:#064e3b;margin:0 0 3px;"><i class="ti ti-bulb" style="font-size:11px;margin-right:3px;"></i>Replication Strategy</p>
+              <p style="font-size:11px;color:#0F6E56;margin:0;line-height:1.6;">Apply Mapp &amp; Bergman's (2021) Dual Capacity-Building Framework: design engagement that simultaneously builds family capacity <em>and</em> staff capacity to partner. Audit whether your family liaisons have real professional authority or serve primarily as translators. Californians for Justice (2022) found that tokenistic engagement — families on advisory committees without decision-making power — produces no measurable improvement in student outcomes.</p>
+            </div>
+            <p style="font-size:10px;color:#6B7280;margin-top:8px;font-style:italic;">Sources: Dobbie, W., &amp; Fryer, R. G. (2011). Are high-quality schools enough to increase achievement among the poor? <em>American Economic Journal: Applied Economics, 3</em>(3), 158–187. | Mapp, K. L., &amp; Bergman, E. (2021). <em>Embracing a new normal: Toward a more liberatory approach to family engagement.</em> Carnegie Corporation of New York.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div style="border:1px solid #ede9fe;border-left:4px solid #533AB7;border-radius:8px;padding:14px 16px;background:#faf7ff;">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#533AB7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:13px;font-weight:700;color:#fff;">3</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#3730a3;margin:0 0 3px;">School Climate & SEL + Equity: Oakland USD's Restorative Justice Districtwide Scaling</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <span style="font-size:10px;font-weight:600;background:#fee2e2;color:#7f1d1d;padding:2px 8px;border-radius:20px;border:1px solid #fca5a5;">SEL</span>
+              <span style="font-size:10px;font-weight:600;background:#fde8e8;color:#7f1d1d;padding:2px 8px;border-radius:20px;border:1px solid #f8b4b4;">Equity</span>
+            </div>
+            <p style="font-size:12px;color:#3730a3;line-height:1.7;margin:0 0 8px;">Oakland Unified School District implemented Restorative Justice (RJ) not as a discipline alternative but as a school-wide community-building framework, beginning with staff professional development before student programming. Every school designated an RJ Coordinator with protected time, and restorative circles were conducted weekly as proactive community-building — not only in response to conflict. Teacher training in trauma-informed practices was embedded into evaluation cycles, creating accountability for implementation.</p>
+            <p style="font-size:12px;color:#3730a3;line-height:1.7;margin:0 0 8px;"><strong>Result:</strong> Between 2006 and 2014, OUSD schools with full RJ implementation reduced suspension rates by 87% and saw statistically significant reductions in racial discipline disparities (González, 2012). Darling-Hammond et al. (2020) further documented that schools pairing RJ with trauma-informed SEL — rather than implementing either in isolation — showed the strongest reductions in the Black-white discipline gap, and were the only schools to also demonstrate concurrent academic gains.</p>
+            <div style="background:#ede9fe;border-radius:6px;padding:8px 10px;margin-top:8px;">
+              <p style="font-size:11px;font-weight:600;color:#3730a3;margin:0 0 3px;"><i class="ti ti-bulb" style="font-size:11px;margin-right:3px;"></i>Replication Strategy</p>
+              <p style="font-size:11px;color:#533AB7;margin:0;line-height:1.6;">Begin with adult SEL and educator well-being before launching student-facing programs. Cantor et al. (2019) establish that educators cannot scaffold emotional regulation for students when operating in chronic stress themselves. Audit your last 90 days of discipline data disaggregated by race: if Black and Latino/a students are overrepresented in referrals, restorative practices are not yet systemic — they remain reactive. CASEL's (2021) Systemic SEL Framework identifies school-wide norms and practices as the highest-leverage entry point for equity-centered climate change.</p>
+            </div>
+            <p style="font-size:10px;color:#6B7280;margin-top:8px;font-style:italic;">Sources: González, T. (2012). Keeping kids in schools: Restorative justice, punitive discipline, and the school-to-prison pipeline. <em>Journal of Law &amp; Education, 41</em>(2), 281–335. | Darling-Hammond, L., Flook, L., Cook-Harvey, C., Barron, B., &amp; Osher, D. (2020). Implications for educational practice of the science of learning and development. <em>Applied Developmental Science, 24</em>(2), 97–140. | Cantor, P., Osher, D., Berg, J., Steyer, L., &amp; Rose, T. (2019). Malleability, plasticity, and individuality. <em>Applied Developmental Science, 23</em>(1), 1–31.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <!-- Action buttons -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
       <button id="retakeBtn"><i class="ti ti-refresh"></i> Retake assessment</button>
@@ -742,15 +977,79 @@ function renderResults(){
 
 // ── BIND EVENTS ──
 function bindEvents(){
-  // Intro
+  // Intro — role
   const roleSelect = document.getElementById("roleSelect");
   if(roleSelect) roleSelect.addEventListener("change", e=>{ state.role=e.target.value; render(); });
+
+  // Intro — text fields
   const schoolInput = document.getElementById("schoolInput");
   if(schoolInput) schoolInput.addEventListener("input", e=>{ state.schoolName=e.target.value; });
   const districtInput = document.getElementById("districtInput");
   if(districtInput) districtInput.addEventListener("input", e=>{ state.district=e.target.value; });
+
+  // Intro — email
+  const emailInput = document.getElementById("emailInput");
+  if(emailInput){
+    emailInput.addEventListener("input", e=>{ state.email=e.target.value; });
+    emailInput.addEventListener("blur", e=>{
+      const err = document.getElementById("emailError");
+      if(e.target.value && !isValidEmail(e.target.value)){
+        e.target.classList.add("invalid");
+        if(err) err.classList.add("visible");
+      } else {
+        e.target.classList.remove("invalid");
+        if(err) err.classList.remove("visible");
+      }
+    });
+  }
+
+  // Intro — phone
+  const phoneInput = document.getElementById("phoneInput");
+  if(phoneInput){
+    phoneInput.addEventListener("input", e=>{ state.phone=e.target.value; });
+    phoneInput.addEventListener("blur", e=>{
+      const err = document.getElementById("phoneError");
+      if(e.target.value && !isValidPhone(e.target.value)){
+        e.target.classList.add("invalid");
+        if(err) err.classList.add("visible");
+      } else {
+        e.target.classList.remove("invalid");
+        if(err) err.classList.remove("visible");
+      }
+    });
+  }
+
+  // Intro — start button (validate email + phone before proceeding)
   const startBtn = document.getElementById("startBtn");
-  if(startBtn) startBtn.addEventListener("click", ()=>{ if(state.role){ state.step="survey"; state.activeDomain=0; render(); } });
+  if(startBtn){
+    startBtn.addEventListener("click", ()=>{
+      if(!state.role) return;
+
+      let hasError = false;
+
+      const emailEl = document.getElementById("emailInput");
+      const emailErr = document.getElementById("emailError");
+      if(!state.email || !isValidEmail(state.email)){
+        if(emailEl){ emailEl.classList.add("invalid"); }
+        if(emailErr){ emailErr.classList.add("visible"); }
+        hasError = true;
+      }
+
+      const phoneEl = document.getElementById("phoneInput");
+      const phoneErr = document.getElementById("phoneError");
+      if(!state.phone || !isValidPhone(state.phone)){
+        if(phoneEl){ phoneEl.classList.add("invalid"); }
+        if(phoneErr){ phoneErr.classList.add("visible"); }
+        hasError = true;
+      }
+
+      if(hasError) return;
+
+      state.step="survey";
+      state.activeDomain=0;
+      render();
+    });
+  }
 
   // Survey nav
   const prevBtn = document.getElementById("prevBtn");
@@ -787,7 +1086,7 @@ function bindEvents(){
 
   // Results actions
   const retakeBtn=document.getElementById("retakeBtn");
-  if(retakeBtn) retakeBtn.addEventListener("click",()=>{ state.step="survey"; state.activeDomain=0; state.expandedDomain=null; render(); });
+  if(retakeBtn) retakeBtn.addEventListener("click",()=>{ state.step="survey"; state.activeDomain=0; state.expandedDomain=null; state.submitStatus="idle"; render(); });
 
   const printBtn=document.getElementById("printBtn");
   if(printBtn) printBtn.addEventListener("click",()=>{
