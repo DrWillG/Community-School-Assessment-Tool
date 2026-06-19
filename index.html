@@ -394,6 +394,7 @@ const PHASES = [
 
 // ── STATE ──
 // ── SMARTSHEET CONFIG ──
+const SS_TOKEN   = "w8mPuY3XNMOGLDHVVNfhYkY0S1fDJIIOYGkK8";
 const SS_SHEET_ID = 475244627185540;
 const SS_COL = {
   submissionId:   5341475566292868,
@@ -498,23 +499,17 @@ async function submitToSmartsheet(){
     {columnId:SS_COL.strengths,     value:sorted.slice(-2).reverse().map(d=>d.title).join(", ")}
   ];
 
-  const prompt=`Add a row to Smartsheet sheet ID ${SS_SHEET_ID} with these exact cell values:\n`+
-    cells.map(c=>`columnId ${c.columnId}: ${JSON.stringify(c.value)}`).join("\n")+
-    `\nUse the add_rows tool. Confirm with SUCCESS when done.`;
-
   try {
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
+    const res=await fetch(`https://api.smartsheet.com/2.0/sheets/${SS_SHEET_ID}/rows`,{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:1000,
-        mcp_servers:[{type:"url",url:"https://mcp.smartsheet.com",name:"smartsheet-mcp"}],
-        messages:[{role:"user",content:prompt}]
-      })
+      headers:{
+        "Authorization":"Bearer "+SS_TOKEN,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({cells})
     });
     const data=await res.json();
-    if(res.ok && !data.error){ state.submitStatus="success"; }
+    if(res.ok){ state.submitStatus="success"; }
     else { console.error("Smartsheet error:",data); state.submitStatus="error"; }
   } catch(err){
     console.error("Submit failed:",err);
